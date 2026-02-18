@@ -15,8 +15,10 @@ public class Course {
         this.credits = credits;
         this.instructor = instructor;
         this.maxEnrollment = maxEnrollment;
-        this.prerequisites = new ArrayList<>(prerequisites);
+        // Avoid null pointer
+        this.prerequisites = (prerequisites != null) ? new ArrayList<>(prerequisites) : new ArrayList<>();
     }
+
 
     // Getters and Setters
     public String getCourseCode() {
