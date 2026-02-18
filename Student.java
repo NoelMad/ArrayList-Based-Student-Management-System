@@ -1,6 +1,6 @@
-//Create a Student class 
 public class Student {
-    //Fields
+
+    // Fields
     private String studentId;
     private String firstName;
     private String lastName;
@@ -9,8 +9,10 @@ public class Student {
     private String major;
     private int year;
 
-    //Constructor
-    public Student(String studentId, String firstName, String lastName, String email, double gpa, String major, int year) {
+    // Constructor with all parameters
+    public Student(String studentId, String firstName, String lastName,
+                   String email, double gpa, String major, int year) {
+
         this.studentId = studentId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -20,10 +22,10 @@ public class Student {
         this.year = year;
     }
 
-    //Getters and Setters
+    // Getters and Setters
     public String getStudentId() {
         return studentId;
-}   
+    }
 
     public void setStudentId(String studentId) {
         this.studentId = studentId;
@@ -76,29 +78,39 @@ public class Student {
     public void setYear(int year) {
         this.year = year;
     }
-}
 
-@Override
-public boolean equals(Object obj) {
-    if (this == obj) {
-        return true;
+    // Returns full name
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
-    if (obj == null || getClass() != obj.getClass()) {
-        return false;
+
+    // equals() compares by studentId
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) return true;
+
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Student other = (Student) obj;
+
+        return studentId != null && studentId.equals(other.studentId);
     }
-    Student student = (Student) obj;
-    Object studentId;
-    return studentId.equals(student.studentId);
-}
 
-@Override
-public int hashCode() {
-    return studentId.hashCode();
-}
+    // hashCode() consistent with equals()
+    @Override
+    public int hashCode() {
+        return studentId == null ? 0 : studentId.hashCode();
+    }
 
-@Override
-public String toString() {
-    return "Student{" + "firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + "."};
-}
+    // toString() formatted output
+    @Override
+    public String toString() {
+        return "Student ID: " + studentId +
+                "\nName: " + getFullName() +
+                "\nEmail: " + email +
+                "\nMajor: " + major +
+                "\nYear: " + year +
+                "\nGPA: " + gpa;
+    }
 }
