@@ -1,65 +1,105 @@
 import java.util.ArrayList;
 
 public class CourseManager {
-    // A list to store all available courses in the curriculum.
-    private ArrayList<Course> courses = new ArrayList<>();
+    private ArrayList<Course> courses;
 
-    // Adds a new course object to the system's collection.
+    public CourseManager() {
+        this.courses = new ArrayList<>();
+    }
+
+   //addCourse method with validation for null and duplicate course codes
     public void addCourse(Course course) {
+        if (course == null) {
+            System.out.println("Error: Cannot add a null course.");
+            return;
+        }
+        // Check for duplicate courseCode
+        if (findCourse(course.getCourseCode()) != null) {
+            System.out.println("Error: Course code " + course.getCourseCode() + " already exists.");
+            return;
+        }
         courses.add(course);
     }
 
-    // Searches for a course by its unique course code and returns it, or null if not found.
+    //findCourse method to search for a course by its code
     public Course findCourse(String courseCode) {
         for (Course c : courses) {
-            if (c.getCourseCode().equalsIgnoreCase(courseCode)) return c;
+            if (c.getCourseCode().equalsIgnoreCase(courseCode)) {
+                return c;
+            }
         }
-        return null; // Return null if the course code does not exist.
+        return null;
     }
 
-    // Filters and returns a list of all courses taught by a specific instructor.
+    //getCoursesByInstructor method to retrieve all courses taught by a specific instructor
     public ArrayList<Course> getCoursesByInstructor(String instructor) {
-        ArrayList<Course> instructorCourses = new ArrayList<>();
+        ArrayList<Course> result = new ArrayList<>();
         for (Course c : courses) {
-            if (c.getInstructor().equalsIgnoreCase(instructor)) instructorCourses.add(c);
+            if (c.getInstructor().equalsIgnoreCase(instructor)) {
+                result.add(c);
+            }
         }
-        return instructorCourses;
+        return result;
     }
 
-    
-    //Identifies courses a student is eligible for (not already enrolled and prerequisites met).
-    public ArrayList<Course> getAvailableCourses(String studentId, EnrollmentManager enrollmentManager) {
+    //ArrayList<Course> getAvailableCourses method to determine which courses a student can enroll in based on their current enrollments and course prerequisites
+    public ArrayList<Course> getAvailableCourses(String studentId, StudentManager studentManager, EnrollmentManager enrollmentManager) {
         ArrayList<Course> available = new ArrayList<>();
         
-        // Get the list of courses the student is currently or previously enrolled in.
-        ArrayList<Enrollment> currentEnrollments = enrollmentManager.getEnrollmentsByStudent(studentId);
-
+        // 1. Get student's current enrollments to check for completed/in-progress courses
+        ArrayList<Enrollment> studentEnrollments = enrollmentManager.getEnrollmentsByStudent(studentId);
+        
         for (Course course : courses) {
+            // Check A: Is the student already enrolled in this course?
             boolean alreadyEnrolled = false;
+            ArrayList<String> completedCourseCodes = new ArrayList<>();
             
-            // Check if the student is already enrolled in this specific course.
-            for (Enrollment e : currentEnrollments) {
+            for (Enrollment e : studentEnrollments) {
                 if (e.getCourseCode().equals(course.getCourseCode())) {
                     alreadyEnrolled = true;
+                }
+                // Track courses where they have a passing grade
+                if (e.isPassing()) {
+                    completedCourseCodes.add(e.getCourseCode());
+                }
+            }
+
+            if (alreadyEnrolled) continue;
+
+            // Check B: Are prerequisites met?
+            ArrayList<String> prereqs = course.getPrerequisites();
+            boolean prereqsMet = true;
+            
+            for (String prereqCode : prereqs) {
+                if (!completedCourseCodes.contains(prereqCode)) {
+                    prereqsMet = false;
                     break;
                 }
             }
 
-            // Logic Note: In a full system, you would also check if prerequisites are met here.
-            if (!alreadyEnrolled) {
+            if (prereqsMet) {
                 available.add(course);
             }
         }
         return available;
     }
 
-    // Iterates through the collection and prints the details of every course.
+    //printAllCourses method to display all courses in a formatted table
     public void printAllCourses() {
-        if (courses.isEmpty()) System.out.println("No courses available in the system.");
-        for (Course c : courses) System.out.println(c);
+        if (courses.isEmpty()) {
+            System.out.println("No courses registered.");
+            return;
+        }
+        System.out.println("----------------------------------------------------------------------");
+        System.out.printf("%-10s | %-25s | %-15s | %-3s%n", "Code", "Course Name", "Instructor", "Max");
+        System.out.println("----------------------------------------------------------------------");
+        for (Course c : courses) {
+            System.out.printf("%-10s | %-25s | %-15s | %-3d%n", 
+                c.getCourseCode(), c.getCourseName(), c.getInstructor(), c.getMaxEnrollment());
+        }
     }
 
-    // Returns the total count of courses currently managed by the system.
+    //getTotalCourses method to return the total number of courses currently registered
     public int getTotalCourses() {
         return courses.size();
     }
