@@ -5,7 +5,7 @@ public class StudentManagementSystemMain {
     // Core data structures
     private static GenericList<Student> students = new GenericList<>();
     private static GenericList<Course> courses = new GenericList<>();
-    private static ArrayList<Pair<Student, Course>> enrollments = new ArrayList<>();
+    private static ArrayList<Enrollment> enrollments = new ArrayList<>();
     
     // Tracks grades as (CourseCode, GradeValue)
     private static ArrayList<Pair<String, Double>> grades = new ArrayList<>(); 
@@ -102,28 +102,48 @@ public class StudentManagementSystemMain {
 
     // 5. Add Course 
     private static void addCourse() {
-        System.out.print("Course Code: "); String code = scanner.nextLine();
-        System.out.print("Course Name: "); String name = scanner.nextLine();
-        courses.add(new Course(code, name, 0, name, 0));
+        System.out.print("Course Code: ");
+        String code = scanner.nextLine();
+
+        System.out.print("Course Name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Credits: ");
+        int credits = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Instructor: ");
+        String instructor = scanner.nextLine();
+
+        System.out.print("Max Enrollment: ");
+        int maxEnrollment = Integer.parseInt(scanner.nextLine());
+
+        courses.add(new Course(code, name, credits, instructor, maxEnrollment));
         System.out.println("Course registered.");
     }
 
     // 6. Enroll Student in Course 
-    private static void enrollStudent() {
-        System.out.print("Student ID: "); String sId = scanner.nextLine();
-        System.out.print("Course Code: "); String cCode = scanner.nextLine();
-        
-        Student s = findStudentById(sId);
-        Course c = findCourseByCode(cCode);
+        private static void enrollStudent() {
+            System.out.print("Student ID: ");
+            String sId = scanner.nextLine();
 
-        if (s != null && c != null) {
-            enrollments.add(new Pair<>(s, c));
-            System.out.println("Enrollment successful.");
-        } else {
-            System.out.println("Error: Check ID and Code.");
+            System.out.print("Course Code: ");
+            String cCode = scanner.nextLine();
+
+            System.out.print("Semester: ");
+            String semester = scanner.nextLine();
+
+            Student s = findStudentById(sId);
+            Course c = findCourseByCode(cCode);
+
+            if (s != null && c != null) {
+                String enrollmentId = "E" + (enrollments.size() + 1);
+                Enrollment e = new Enrollment(enrollmentId, sId, cCode, semester);
+                enrollments.add(e);
+                System.out.println("Enrollment successful.");
+            } else {
+                System.out.println("Error: Check ID and Code.");
+            }
         }
-    }
-
     // 7. Assign Grade
     private static void assignGrade() {
         System.out.print("Course Code: "); String code = scanner.nextLine();
