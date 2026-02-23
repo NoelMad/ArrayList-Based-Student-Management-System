@@ -122,34 +122,57 @@ public class StudentManagementSystemMain {
     }
 
     // 6. Enroll Student in Course 
-        private static void enrollStudent() {
-            System.out.print("Student ID: ");
-            String sId = scanner.nextLine();
+     private static void enrollStudent() {
+        System.out.print("Student ID: ");
+        String sId = scanner.nextLine();
 
-            System.out.print("Course Code: ");
-            String cCode = scanner.nextLine();
+        System.out.print("Course Code: ");
+        String cCode = scanner.nextLine();
 
-            System.out.print("Semester: ");
-            String semester = scanner.nextLine();
+        System.out.print("Semester: ");
+        String semester = scanner.nextLine();
 
-            Student s = findStudentById(sId);
-            Course c = findCourseByCode(cCode);
+        Student s = findStudentById(sId);
+        Course c = findCourseByCode(cCode);
 
-            if (s != null && c != null) {
-                String enrollmentId = "E" + (enrollments.size() + 1);
-                Enrollment e = new Enrollment(enrollmentId, sId, cCode, semester);
-                enrollments.add(e);
-                System.out.println("Enrollment successful.");
-            } else {
-                System.out.println("Error: Check ID and Code.");
-            }
+        if (s != null && c != null) {
+            String enrollmentId = "E" + (enrollments.size() + 1);
+            Enrollment e = new Enrollment(enrollmentId, sId, cCode, semester);
+            enrollments.add(e);
+            System.out.println("Enrollment successful.");
+        } else {
+            System.out.println("Error: Check ID and Code.");
         }
+    }
     // 7. Assign Grade
     private static void assignGrade() {
-        System.out.print("Course Code: "); String code = scanner.nextLine();
-        System.out.print("Grade: "); double g = Double.parseDouble(scanner.nextLine());
-        grades.add(new Pair<>(code, g));
-        System.out.println("Grade assigned.");
+        System.out.print("Course Code: "); 
+        String code = scanner.nextLine();
+
+        System.out.print("Grade (A-F): "); 
+        String grade = scanner.nextLine().toUpperCase(); // store as letter
+
+        // Optional: validate input
+        if (!grade.matches("[A-F]")) {
+            System.out.println("Invalid grade. Please enter A, B, C, D, or F.");
+            return;
+        }
+
+        // Find the enrollment and assign the grade
+        boolean found = false;
+        for (Enrollment e : enrollments) {
+            if (e.getCourseCode().equals(code)) {
+                e.setGrade(grade);
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            System.out.println("Grade assigned.");
+        } else {
+            System.out.println("Enrollment not found for this course.");
+        }
     }
 
     // 8. Calculate Student GPA 
